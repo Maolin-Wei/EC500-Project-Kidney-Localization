@@ -1,6 +1,9 @@
 # EC500-Project-Kidney-Localization
 This repository is for BU ENG EC500 Course ( Medical Imaging with AI) Project - Kidney Localization with Limited Data
 
+## Team Members
+Zachary Loschinskey, Omri Yosfan, Maolin Wei, Shashank Basty
+
 ## Introduction
 Our task is to detect and draw a bounding box around the kidney(s) in medical images generated through diffusion weighted MRI to pave the way for improved DW-MRI imaging enhancing diagnosis, treatment, and monitoring of renal diseases, including:
 - Develop an algorithm to accurately detect the right and left kidneys.
