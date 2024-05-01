@@ -147,12 +147,12 @@ if __name__ == '__main__':
     model_type = 'MedSAM' # MedSAM or UNet
     # model_path = 'work_dir/Model4_UNet2/best_model_epoch_7.pth'
     model_path = 'work_dir/Model4_MedSAM2/best_model_epoch_2.pth'
-    data_root = 'data/KidneyData/npy_1024_test_all_slices/MRI_kidney/'
+    data_path = 'data/KidneyData/npy_1024_test_all_slices/MRI_kidney/'
     output_dir = f'./work_dir/output_{model_type}/'
     os.makedirs(output_dir, exist_ok=True)
 
     model = load_model(model_path, model_type, device)
-    test_dataset = KidneyDataset(data_root)
+    test_dataset = KidneyDataset(data_path)
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
     all_ious = []
