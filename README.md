@@ -23,8 +23,7 @@ Our task is to detect and draw a bounding box around the kidney(s) in medical im
 The dataset includes 8 diffusion weighted MRI acquisitions collected in healthy volunteers. Each acquisition is coronal, allowing for easy viewing of the kidneys. Additionally, there is a held-out dataset that will be used to evaluate our model at the end of the project.
 
 **Sample Data Visualization:**
-
-![sample_data](data/sample_image.png)
+![sample_image](https://github.com/Maolin-Wei/EC500-Project-Kidney-Localization/assets/144057115/08fefab5-6fbc-4493-ba39-96189210d855)
 
 ### Model Training and Evaluation
 This section will be updated soon!
