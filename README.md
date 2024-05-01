@@ -26,7 +26,7 @@ Each volunteer (case1 to case8) contains 5 volumn images (Fimage_AP_0163.nrrd, .
 
 **Visualization of sample data of our dataset:**
 
-<img src="https://raw.githubusercontent.com/Maolin-Wei/EC500-Project-Kidney-Localization/main/assets/144057115/08fefab5-6fbc-4493-ba39-96189210d855.jpg" width="270" height="270" alt="Data Sample">
+<img src="https://github.com/Maolin-Wei/EC500-Project-Kidney-Localization/assets/144057115/b735a742-6ce6-4c9f-ad67-3bdf13104399" width="270" height="270" alt="Data Sample">
 
 ## MedSAM + Detection Model
 ### Data Pre-processing
@@ -50,6 +50,7 @@ python data_preprocess.py
 - Resample image and label size to `1024 x 1024 x 3`
 
 **Visualization of sample data after pre-processing:**
+
 ![data_smaple_after_preprocessing](https://github.com/Maolin-Wei/EC500-Project-Kidney-Localization/assets/144057115/42fca3f1-954e-45cf-be0d-2725f46825ee)
 
 **The data will be rotated 90 degrees counterclockwise when loading during training and evaluation**
