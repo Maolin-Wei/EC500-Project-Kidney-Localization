@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-train the image encoder and mask decoder
-freeze prompt image encoder
+train the detection model
+freeze image encoder
 """
 
 # %% setup environment
@@ -56,7 +56,7 @@ parser.add_argument(
     "-i2",
     "--val_npy_path",
     type=str,
-    default="data/KidneyData/npy_1024_val/MRI_kidney",
+    default='',
     help="path to validation npy files; two subfolders: gts and imgs",
 )
 parser.add_argument("-task_name", type=str, default="MedSAM-ViT-B-Kidney-Detection")
@@ -72,7 +72,7 @@ parser.add_argument(
 parser.add_argument("-pretrain_model_path", type=str, default="")
 parser.add_argument("-work_dir", type=str, default="./work_dir")
 # train
-parser.add_argument("-num_epochs", type=int, default=301)
+parser.add_argument("-num_epochs", type=int, default=11)
 parser.add_argument("-batch_size", type=int, default=1)
 parser.add_argument("-num_workers", type=int, default=4)
 # Optimizer parameters
@@ -242,7 +242,6 @@ def main_detection():
     )
 
     image_encoder = build_MedSAM_image_encoder(args.model_type, checkpoint=args.checkpoint)
-    # image_encoder = build_MedSAM_image_encoder(args.model_type, checkpoint=None)
     # image_encoder = MyUNet()
 
     num_classes = 2
@@ -281,7 +280,6 @@ def main_detection():
     )
 
     best_iou = 0
-    iou_threshold = 0.01
 
     for epoch in range(args.num_epochs):
         epoch_loss = 0
@@ -327,54 +325,59 @@ def main_detection():
         print(f"Epoch: {epoch}, Total Loss: {epoch_loss:.8f}, "
               f"Class Loss: {epoch_cls_loss:.8f}, Box Reg Loss: {epoch_box_reg_loss:.8f}, "
               f"Conf Loss: {epoch_conf_loss:.8f}")
-
-        # Validation
-        detection_model.eval()
-        val_box_reg_loss = 0
-        with torch.no_grad():
-            ious = []
-            for images, gt_boxes, labels, img_name in val_dataloader:
-                images = images.to(device)
-                gt_boxes = gt_boxes.to(device)
-                labels = labels.to(device)
-
-                class_preds, pred_boxes, conf_scores = detection_model(images)
-
-                pred_boxes = pred_boxes[0]
-                conf_scores = conf_scores[0]
-                class_preds = class_preds[0]
-
-                iou = box_iou(pred_boxes, gt_boxes[0])
-                iou_max, iou_max_idx = iou.max(dim=1)
-                box_reg_loss = box_regression_loss(pred_boxes, gt_boxes[0][iou_max_idx])  # SmoothL1
-                val_box_reg_loss += box_reg_loss.item()
-
-                class_scores = torch.softmax(class_preds, dim=-1)
-                _, class_preds = class_scores.max(dim=-1)
-
-                # Apply NMS
-                keep_indices = nms(pred_boxes, conf_scores, iou_threshold=0.5)
-
-                class_preds = class_preds[keep_indices]
-                pred_boxes = pred_boxes[keep_indices]
-                conf_scores = conf_scores[keep_indices]
-
-                ious_temp, class_preds = calculate_iou(pred_boxes, class_preds, gt_boxes[0], labels[0])
-
-                ious.extend(ious_temp.cpu().numpy())
-
-            val_box_reg_loss /= len(val_dataloader)
-            mean_iou = np.mean(ious)
-            print(f"Epoch: {epoch}, Validation Box Reg Loss: {val_box_reg_loss:.8f} Validation Average IoU: {mean_iou:.8f}")
-
-            if mean_iou > best_iou:
-                best_iou = mean_iou
-                best_model_path = join(model_save_path, f"best_model_epoch_{epoch}.pth")
-                torch.save(detection_model.state_dict(), best_model_path)
-                print(f"New best model saved with IoU: {best_iou:.8f}")
-            if epoch % 20 == 0:
+        
+        # No valid set, save the model
+        if args.val_npy_path == '':
+            if epoch % 1 == 0:
                 model_path = join(model_save_path, f"model_epoch_{epoch}.pth")
                 torch.save(detection_model.state_dict(), model_path)
+        else: # have validation set
+            detection_model.eval()
+            val_box_reg_loss = 0
+            with torch.no_grad():
+                ious = []
+                for images, gt_boxes, labels, img_name in val_dataloader:
+                    images = images.to(device)
+                    gt_boxes = gt_boxes.to(device)
+                    labels = labels.to(device)
+
+                    class_preds, pred_boxes, conf_scores = detection_model(images)
+
+                    pred_boxes = pred_boxes[0]
+                    conf_scores = conf_scores[0]
+                    class_preds = class_preds[0]
+
+                    iou = box_iou(pred_boxes, gt_boxes[0])
+                    iou_max, iou_max_idx = iou.max(dim=1)
+                    box_reg_loss = box_regression_loss(pred_boxes, gt_boxes[0][iou_max_idx])  # SmoothL1
+                    val_box_reg_loss += box_reg_loss.item()
+
+                    class_scores = torch.softmax(class_preds, dim=-1)
+                    _, class_preds = class_scores.max(dim=-1)
+
+                    # Apply NMS
+                    keep_indices = nms(pred_boxes, conf_scores, iou_threshold=0.5)
+
+                    class_preds = class_preds[keep_indices]
+                    pred_boxes = pred_boxes[keep_indices]
+                    conf_scores = conf_scores[keep_indices]
+
+                    ious_temp, class_preds = calculate_iou(pred_boxes, class_preds, gt_boxes[0], labels[0])
+
+                    ious.extend(ious_temp.cpu().numpy())
+
+                val_box_reg_loss /= len(val_dataloader)
+                mean_iou = np.mean(ious)
+                print(f"Epoch: {epoch}, Validation Box Reg Loss: {val_box_reg_loss:.8f} Validation Average IoU: {mean_iou:.8f}")
+
+                if mean_iou > best_iou:
+                    best_iou = mean_iou
+                    best_model_path = join(model_save_path, f"best_model_epoch_{epoch}.pth")
+                    torch.save(detection_model.state_dict(), best_model_path)
+                    print(f"New best model saved with IoU: {best_iou:.8f}")
+                if epoch % 20 == 0:
+                    model_path = join(model_save_path, f"model_epoch_{epoch}.pth")
+                    torch.save(detection_model.state_dict(), model_path)
 
 if __name__ == "__main__":
     main_detection()
