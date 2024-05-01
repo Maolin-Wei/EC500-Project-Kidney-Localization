@@ -18,15 +18,51 @@ Our task is to detect and draw a bounding box around the kidney(s) in medical im
 2. Install [Pytorch 2.0](https://pytorch.org/get-started/locally/)
 3. Enter the MedSAM folder `cd MedSAM` and run `pip install -e .`
 
-## Get Started
-### Dataset
+## Dataset
 The dataset includes 8 diffusion weighted MRI acquisitions collected in healthy volunteers. Each acquisition is coronal, allowing for easy viewing of the kidneys. Additionally, there is a held-out dataset that will be used to evaluate our model at the end of the project.
 
-**Sample Data Visualization:**
+Each volunteer (case1 to case8) contains 5 volumn images (Fimage_AP_0163.nrrd, ... , Fimage_AP_0167.nrrd). Every volumn image share the same masks of kidneys (svr_leftKidneyMask2.nii.gz and svr_rightKidneyMask2.nii.gz)
+
+**Visualization of sample data of our dataset:**
+
 ![sample_image](https://github.com/Maolin-Wei/EC500-Project-Kidney-Localization/assets/144057115/08fefab5-6fbc-4493-ba39-96189210d855)
 
-### Model Training and Evaluation
-This section will be updated soon!
+## MedSAM + Detection Model
+### Data Pre-processing
+**1. Format dataset**  
+  This process is to ensure each image file has a corresponding label file.
+  
+  Since the original data share the same masks for each image in the same case. It needs to be processed to make each image correspond to a single mask, and the seperate masks for left kidney and right kidney will be integrated into one single mask.
+   
+  For example, for case1 image (Fimage_AP_0163.nrrd) and mask (svr_leftKidneyMask2.nii.gz and svr_rightKidneyMask2.nii.gz). After the processing, image Fimage_AP_0163_case1.nrrd and its corresponding label Fimage_AP_0163_case1.nii.gz will be created.
+```bash
+python create_dataset.py
+```
+
+**2. Create data for training/validation/testing**  
+  To meet the input of MedSAM, each 3D image data and corresponding label will be processed to 2D slices with the shape of `1024 x 1024 x 3`. The 2D slice images and labels will be saved as `npy` file.
+```bash
+python data_preprocess.py
+```
+- Clip the intensity values to the range between the `0.5th` and `99.5th` percentiles for MRI images.
+- Utilize max-min normalization to rescale the intensity values to `[0, 255]`.
+- Resample image and label size to `1024 x 1024 x 3`
+
+### Training
+Download [MedSAM model checkpoint](https://drive.google.com/drive/folders/1ETWmi4AiniJeWOt6HAsYgTjYv_fkgzoN) and place it at e.g., `MedSAM/checkpoint/MedSAM/medsam_vit_b.pth`
+
+```bash
+python train.py --tr_npy_path /path/to/training_data --val_npy_path /path/to/validation_data --checkpoint /path/to/MedSAM_checkpoint.pth
+```
+
+More parameters can be seen in the `train.py`
+
+### Evaluation
+To evaluate the model, specify the `model_path`, `data_path` in the `evaluate.py`, then run:
+
+```bash
+python evaluate.py
+```
 
 ## Acknowledgements
 - We highly appreciate the [MedSAM](https://github.com/bowang-lab/MedSAM) team for the great foundation model.
