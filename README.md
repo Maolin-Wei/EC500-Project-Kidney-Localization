@@ -49,6 +49,9 @@ python data_preprocess.py
 - Utilize max-min normalization to rescale the intensity values to `[0, 255]`.
 - Resample image and label size to `1024 x 1024 x 3`
 
+
+**The data will be rotated 90 degrees counterclockwise when loading during training and evaluation**
+
 ### Training
 Download [MedSAM model checkpoint](https://drive.google.com/drive/folders/1ETWmi4AiniJeWOt6HAsYgTjYv_fkgzoN) and place it at e.g., `MedSAM/checkpoint/MedSAM/medsam_vit_b.pth`
 
