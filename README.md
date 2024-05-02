@@ -12,7 +12,7 @@ Our task is to detect and draw a bounding box around the kidney(s) in medical im
 - Locate a bounding box, large enough (no too tight), allowing for motion, particularly in superior-inferior direction.
 - Develop evaluation code to evaluate the model performance with standard object detection metrics such as Intersection over Union (IoU) and Mean Average Precision (mAP).
 - Develop another detection algorithm using U-Net for comparison.
-  - See U-Nets Folder for more information in README 
+  - **See `U-Nets` Folder for more information about README** 
 
 ## Installation
 1. Create a virtual environment `conda create -n [env_name] python=3.10` and activate it `conda activate [env_name]`
