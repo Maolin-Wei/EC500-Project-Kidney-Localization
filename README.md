@@ -28,7 +28,7 @@ Each volunteer (case1 to case8) contains 5 volumn images (Fimage_AP_0163.nrrd, .
 
 <img src="https://github.com/Maolin-Wei/EC500-Project-Kidney-Localization/assets/144057115/b735a742-6ce6-4c9f-ad67-3bdf13104399" width="270" height="270" alt="Data Sample">
 
-It is too dark and not in the correct direction, so it will be processed in the later processes.
+**It is too dark and not in the correct direction, so it will be processed in the later processes.**
 
 ## MedSAM + Detection Model
 ### Data Pre-processing
