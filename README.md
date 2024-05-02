@@ -55,6 +55,8 @@ python data_preprocess.py
 
 **The data will be rotated 90 degrees counterclockwise when loading during training and evaluation**
 
+![data_smaple_after_preprocessing](https://github.com/Maolin-Wei/EC500-Project-Kidney-Localization/assets/144057115/62e8ffa2-8107-447f-b6a3-dbc7012f1fb4)
+
 ### Training
 Download [MedSAM model checkpoint](https://drive.google.com/drive/folders/1ETWmi4AiniJeWOt6HAsYgTjYv_fkgzoN) and place it at e.g., `MedSAM/checkpoint/MedSAM/medsam_vit_b.pth`
 
