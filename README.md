@@ -14,6 +14,9 @@ Our task is to detect and draw a bounding box around the kidney(s) in medical im
 - Develop another detection algorithm using U-Net for comparison.
   - **See `U-Nets` Folder for more information in README** 
 
+## Detection Results
+![output](https://github.com/Maolin-Wei/EC500-Project-Kidney-Localization/assets/144057115/412d63a9-7e9c-424c-a9bb-922490771930)
+
 ## Installation
 1. Create a virtual environment `conda create -n [env_name] python=3.10` and activate it `conda activate [env_name]`
 2. Install [Pytorch 2.0](https://pytorch.org/get-started/locally/)
